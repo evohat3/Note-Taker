@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs')
 const notes = require('./db/db.json')
+const uniqid = require('./Helpers/uniqid')
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,7 +16,6 @@ app.use(express.static('public'));
 app.get('/notes', (req, res) => { 
     res.sendFile(path.join(__dirname, '/public/notes.html'));
 });
-
 
 // **** Gets the saved notes ****
 app.get('/api/notes', (req, res) => {
@@ -33,6 +33,32 @@ app.get('/api/notes', (req, res) => {
   });
 });
 
+
+// app.delete('/api/notes/:id', (req, res) => {
+//   const { id } = req.params;
+//   const noteIndex = notes.findIndex(n => n.id == id)
+
+//   notes.splice(noteIndex, `${id}`)
+
+//   return res.send('Note Deleted');
+// })
+
+
+app.delete('/api/notes/:id', (req, res) => {
+  const { id } = req.params;
+  const noteToDelete = notes.find(note => note.id === id);
+  
+  if (!noteToDelete) {
+    return res.status(404).send('Note not found');
+  }
+
+  const noteIndex = notes.indexOf(noteToDelete);
+  notes.splice(noteIndex, 1);
+
+  return res.send('Note deleted');
+});
+
+
 // *** Post request to Save the notes
 app.post('/api/notes', (req,res) => {
   console.info(`${req.method} request received to add a note`);
@@ -46,11 +72,10 @@ app.post('/api/notes', (req,res) => {
       const newNote = {
         title,
         text,
-        // note_id: uuid(),
+        id: uniqid(),
       };
   
-notes.push(newNote);
-
+      notes.push(newNote);
       // Convert the data to a string so we can save it
       const noteString = JSON.stringify(notes);
 
@@ -74,3 +99,4 @@ notes.push(newNote);
 app.listen(PORT, () =>
   console.log(`Example app listening at http://localhost:${PORT}`)
 );
+

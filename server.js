@@ -4,6 +4,9 @@ const path = require('path');
 const fs = require('fs')
 const notes = require('./db/db.json')
 const uniqid = require('./Helpers/uniqid')
+const util = require('util');
+const readFileAsync = util.promisify(fs.readFile);
+const writeFileAsync = util.promisify(fs.writeFile);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,29 +37,39 @@ app.get('/api/notes', (req, res) => {
 });
 
 
+app.delete('/api/notes/:id', (req, res) =>{
+  // ** reads db.json file asynchronously
+  readFileAsync('./db/db.json', 'utf8').then((notes) => {
+      let filteredNotes;
+      // Try catch method to make sure there are notes available to delete
+      try {
+        filteredNotes = [].concat(JSON.parse(notes));
+      } catch (err) {
+        filteredNotes = [];
+      }
+      console.log('filteredNotes',filteredNotes)
+      return filteredNotes;
+    })
+    // takes filtered notes and returns the new data with the removed 
+    .then((notes) => notes.filter((note) => note.id !== req.params.id))
+    .then((filteredNotes) => writeFileAsync('./db/db.json', JSON.stringify(filteredNotes)))
+    .then(notes=> res.json(notes))
+});
+
+
 // app.delete('/api/notes/:id', (req, res) => {
 //   const { id } = req.params;
-//   const noteIndex = notes.findIndex(n => n.id == id)
-
-//   notes.splice(noteIndex, `${id}`)
-
-//   return res.send('Note Deleted');
-// })
-
-
-app.delete('/api/notes/:id', (req, res) => {
-  const { id } = req.params;
-  const noteToDelete = notes.find(note => note.id === id);
+//   const noteToDelete = notes.find(note => note.id === id);
   
-  if (!noteToDelete) {
-    return res.status(404).send('Note not found');
-  }
+//   if (!noteToDelete) {
+//     return res.status(404).send('Note not found');
+//   }
 
-  const noteIndex = notes.indexOf(noteToDelete);
-  notes.splice(noteIndex, 1);
+//   const noteIndex = notes.indexOf(noteToDelete);
+//   notes.splice(noteIndex, 1);
 
-  return res.send('Note deleted');
-});
+//   return res.send('Note deleted');
+// });
 
 
 // *** Post request to Save the notes
@@ -91,6 +104,7 @@ app.post('/api/notes', (req,res) => {
           };
           console.log(response);
           res.status(201).json(response);
+          
         }
       });
   }});

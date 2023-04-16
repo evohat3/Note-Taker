@@ -15,7 +15,7 @@
       
     
 
-  ![alt text](https://img.shields.io/badge/Badge-MIT%20LICENSE-brightgreen)   ![alt text](https://img.shields.io/github/last-commit/evohat3/readme-maker/main)   [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
+  ![alt text](https://img.shields.io/badge/Badge-MIT%20LICENSE-brightgreen)   ![alt text]([https://img.shields.io/github/last-commit/evohat3/readme-maker/main](https://img.shields.io/github/last-commit/evohat3/Note-Taker))   [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 
 
 
